@@ -3,44 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sachin Photo Host</title>
+    <title>Sachin's Photo Host</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    
+    <style>
+        body { background: #121212; color: #e0e0e0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; width: 90%; max-width: 400px; }
+        input[type="file"] { margin: 20px 0; color: #fff; }
+        button { background: #03dac6; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        #linkBox { margin-top: 20px; word-break: break-all; color: #03dac6; }
+        input[type="text"] { width: 100%; margin-top: 10px; padding: 8px; background: #333; border: 1px solid #444; color: #fff; border-radius: 4px; }
+    </style>
 </head>
 <body>
-    <h2>फोटो अपलोडर</h2>
+
+<div class="container">
+    <h2>📸 फोटो होस्टिंग</h2>
     <input type="file" id="fileInput">
-    <button onclick="upload()">अपलोड करें</button>
-    <div id="result"></div>
+    <button onclick="uploadPhoto()">अपलोड करें</button>
+    <div id="linkBox"></div>
+</div>
 
-    <script>
-        // तुम्हारी Firebase Config डिटेल्स
-        const firebaseConfig = {
-            apiKey: "AIzaSyCglO0vHutINDOWaIWMsv4N9_54dpbPvIo",
-            authDomain: "project-8621d575-e2f7-45a2-963.firebaseapp.com",
-            projectId: "project-8621d575-e2f7-45a2-963",
-            storageBucket: "project-8621d575-e2f7-45a2-963.appspot.com",
-            messagingSenderId: "756626829965",
-            appId: "1:756626829965:web:b7ec8a2f59c1945211a8c4"
-        };
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCrAgR-3kY49awQF2CU3-TSIVHIuy5wl94",
+        authDomain: "booke-app-b1bfa.firebaseapp.com",
+        projectId: "booke-app-b1bfa",
+        storageBucket: "booke-app-b1bfa.firebasestorage.app",
+        messagingSenderId: "615828842414",
+        appId: "1:615828842414:web:bd78e4562f3856eececa3f"
+    };
 
-        firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
 
-        function upload() {
-            const file = document.getElementById('fileInput').files[0];
-            const storageRef = storage.ref('my-photos/' + file.name);
-            
-            document.getElementById('result').innerText = "अपलोड हो रहा है...";
-            
-            storageRef.put(file).then(() => {
-                storageRef.getDownloadURL().then((url) => {
-                    document.getElementById('result').innerHTML = 
-                    "<p>फोटो अपलोड हो गई!</p> लिंक: <br> <input type='text' value='" + url + "' style='width: 90%'>";
-                });
+    function uploadPhoto() {
+        const file = document.getElementById('fileInput').files[0];
+        if(!file) return alert("पहले फाइल तो चुनो!");
+        
+        const linkBox = document.getElementById('linkBox');
+        linkBox.innerText = "अपलोड हो रहा है...";
+
+        const ref = storage.ref('photos/' + new Date().getTime() + "_" + file.name);
+        
+        ref.put(file).then(() => {
+            ref.getDownloadURL().then(url => {
+                linkBox.innerHTML = "लिंक मिल गई! (कॉपी करो): <br><input type='text' value='" + url + "' readonly>";
             });
-        }
-    </script>
+        }).catch(err => {
+            linkBox.innerText = "Error: " + err.message;
+        });
+    }
+</script>
 </body>
-  </html>
-  
+</html>
