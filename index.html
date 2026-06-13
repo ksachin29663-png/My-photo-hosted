@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sachin Photo Host</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <h2>फोटो अपलोडर</h2>
+    <input type="file" id="fileInput">
+    <button onclick="upload()">अपलोड करें</button>
+    <div id="result"></div>
+
+    <script>
+        // तुम्हारी Firebase Config डिटेल्स
+        const firebaseConfig = {
+            apiKey: "AIzaSyCglO0vHutINDOWaIWMsv4N9_54dpbPvIo",
+            authDomain: "project-8621d575-e2f7-45a2-963.firebaseapp.com",
+            projectId: "project-8621d575-e2f7-45a2-963",
+            storageBucket: "project-8621d575-e2f7-45a2-963.appspot.com",
+            messagingSenderId: "756626829965",
+            appId: "1:756626829965:web:b7ec8a2f59c1945211a8c4"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        function upload() {
+            const file = document.getElementById('fileInput').files[0];
+            const storageRef = storage.ref('my-photos/' + file.name);
+            
+            document.getElementById('result').innerText = "अपलोड हो रहा है...";
+            
+            storageRef.put(file).then(() => {
+                storageRef.getDownloadURL().then((url) => {
+                    document.getElementById('result').innerHTML = 
+                    "<p>फोटो अपलोड हो गई!</p> लिंक: <br> <input type='text' value='" + url + "' style='width: 90%'>";
+                });
+            });
+        }
+    </script>
+</body>
+  </html>
+  
