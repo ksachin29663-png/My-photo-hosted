@@ -2,61 +2,65 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>Fast Photo Host</title>
+    <title>Sachin Image Host</title>
+    <!-- Firebase SDK v10.7.1 -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
+        // आपकी कॉन्फ़िगरेशन
         const firebaseConfig = {
             apiKey: "AIzaSyCrAgR-3KY49auQF2CU3-TS1MHZuySwI94",
             authDomain: "booke-app-b1bfa.firebaseapp.com",
             projectId: "booke-app-b1bfa",
-            storageBucket: "booke-app-b1bfa.appspot.com", // यहाँ .appspot.com होना अनिवार्य है
-            messagingSenderId: "615828842414",
+            storageBucket: "booke-app-b1bfa.appspot.com",
             appId: "1:615828842414:web:bd78e4562f3856eececa3f"
         };
 
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
 
-        window.uploadPhoto = async () => {
+        window.uploadImage = async () => {
             const fileInput = document.getElementById('fileInput');
-            const linkBox = document.getElementById('linkBox');
+            const resultDiv = document.getElementById('result');
             const file = fileInput.files[0];
 
-            if (!file) return alert("पहले फाइल चुनें!");
-            linkBox.innerText = "अपलोड हो रहा है... कृपया प्रतीक्षा करें।";
+            if (!file) return alert("कृपया फोटो चुनें!");
+            
+            resultDiv.innerText = "अपलोड हो रहा है...";
 
             try {
-                // फाइल का नाम यूनिक बनाने के लिए टाइमस्टैम्प
-                const storageRef = ref(storage, 'photos/' + Date.now() + "_" + file.name);
-                const snapshot = await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(snapshot.ref);
+                // फाइल का नाम बदलकर टाइमस्टैम्प लगा रहे हैं ताकि यूनिक रहे
+                const fileName = 'photos/' + Date.now() + '_' + file.name;
+                const storageRef = ref(storage, fileName);
                 
-                linkBox.innerHTML = `
-                    <p style="color: #38bdf8;">सफलता! लिंक तैयार है:</p>
-                    <input type="text" value="${url}" readonly style="width: 100%; padding: 10px; border-radius: 5px; border: none; background: #333; color: white;">
-                    <p><small>इसे कॉपी करके इस्तेमाल करें।</small></p>
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+                
+                resultDiv.innerHTML = `
+                    <p style="color: lime;">फोटो अपलोड हो गई!</p>
+                    <input type="text" value="${downloadURL}" readonly style="width:100%; padding:8px; border:none; border-radius:5px;">
+                    <p><small>इस लिंक को कॉपी करें और कहीं भी उपयोग करें।</small></p>
                 `;
             } catch (error) {
-                console.error("Firebase Error:", error);
-                linkBox.innerHTML = `<p style="color: red;">Error: ${error.message}. <br>क्या आपने Firebase Rules पब्लिश किए?</p>`;
+                resultDiv.innerText = "Error: " + error.message;
+                console.error(error);
             }
         };
     </script>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
-        .box { background: #1e293b; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; }
+        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1e293b; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
         input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: none; }
         button { background: #38bdf8; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2>फोटो होस्टिंग</h2>
-        <input type="file" id="fileInput">
-        <button onclick="uploadPhoto()">अपलोड करें</button>
-        <div id="linkBox" style="margin-top: 20px;"></div>
+        <h2>📷 खुद की होस्टिंग</h2>
+        <input type="file" id="fileInput" accept="image/*">
+        <button onclick="uploadImage()">अपलोड और लिंक पाएं</button>
+        <div id="result" style="margin-top:20px;"></div>
     </div>
 </body>
 </html>
